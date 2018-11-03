@@ -1,4 +1,6 @@
 #include <iostream>
+#include <thread>
+
 using namespace std;
 
 void inicarMatrix(int** &matrix, int x, int y){
@@ -7,7 +9,7 @@ void inicarMatrix(int** &matrix, int x, int y){
 	{
 		matrix[i]= new int[y];
 	}
-};
+}
 
 void llenarMatrix(int** &m, int x,int y){
 	for (int i = 0; i < x; ++i)
@@ -17,7 +19,7 @@ void llenarMatrix(int** &m, int x,int y){
 			m[i][j]=1;
 		}
 	}
-};
+}
 
 void printMatrix(int** m,int x, int y){
 	for (int i = 0; i < x; ++i)
@@ -28,11 +30,11 @@ void printMatrix(int** m,int x, int y){
 		}
 		cout<<endl;
 	}
-};
+	cout<<endl;
+}
 
-int* mulltiplicar(int*m1,int**m2,int x1, int y1,int y2) {
+void mulltiplicar(int*m1,int**m2,int x1, int y1,int y2,int** &result,int row) {
 	
-	int result[y1];
 
 	for (int k = 0; k < y1; ++k)
 	{
@@ -42,34 +44,40 @@ int* mulltiplicar(int*m1,int**m2,int x1, int y1,int y2) {
 		{
 			temp += m1[i] * m2[i][k];
 		}
-
-		result[k]=temp;
+		result[k][row]=temp;
 	}
-	return result;
+
 };
 
 
 
 int main()
 {
-	int **matrix1, **matrix2, *test;
 	int x=3,y=3;
-	int result[y];
+	int **matrix1, **matrix2, **result ;
+
+	thread threads[y];
+	inicarMatrix(result,x,y);
+	llenarMatrix(result,x,y);
+
 	inicarMatrix(matrix1,x,y);
 	llenarMatrix(matrix1,x,y);
 	printMatrix(matrix1,x,y);
+
 	inicarMatrix(matrix2,x,y);
 	llenarMatrix(matrix2,x,y);
-	//test=matrix1[1];
+	printMatrix(matrix2,x,y);
 
-	//cout<<test[1];
-
-	test = mulltiplicar(matrix1[1],matrix2,x,y,y);
 
 	for (int i = 0; i < y; ++i)
 	{
-		cout<<result[i]<<" ";
+		threads[i] = thread (mulltiplicar,matrix1[i],matrix2,x,y,y,result,i);
 	}
+	for (int i = 0; i < y; ++i) {
+        threads[i].join();
+    }
+
+	printMatrix(result,x,y);
 
 
 
